@@ -57,7 +57,7 @@ data "kubernetes_service" "ingress_gateway" {
 
 data "aws_lb" "ingress" {
   name = regex(
-    "^(.+)-[^-]+\\.",
+    "^(.+)-[^-]+(?:\\.elb\\.|\\.[^.]+\\.elb\\.amazonaws\\.com)",
     data.kubernetes_service.ingress_gateway.status[0].load_balancer[0].ingress[0].hostname
   )[0]
 }
