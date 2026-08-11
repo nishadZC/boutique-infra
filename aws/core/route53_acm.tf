@@ -44,3 +44,33 @@ resource "aws_acm_certificate_validation" "eks_domain_cert_validation" {
   certificate_arn         = aws_acm_certificate.eks_domain_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.eks_domain_cert_validation_dns : record.fqdn]
 }
+
+data "kubernetes_service" "ingress_gateway" {
+  metadata {
+    name      = "ingress-nginx-controller"
+    namespace = helm_release.ingress-nginx.namespace
+  }
+
+  depends_on = [helm_release.ingress-nginx, module.eks]
+}
+
+data "aws_lb" "ingress" {
+  name = regex(
+    "(^[^-]+)",
+    data.kubernetes_service.ingress_gateway.status[0].load_balancer[0].ingress[0].hostname
+  )[0]
+}
+
+# Route53 dns record for our base domain to nginx ingress nlb
+resource "aws_route53_record" "eks_domain" {
+  zone_id = data.aws_route53_zone.base_domain.id
+  name    = "*.${var.environment}.${var.base_domain}"
+  type    = "A"
+
+  alias {
+    name                   = data.kubernetes_service.ingress_gateway.status.0.load_balancer.0.ingress.0.hostname
+    zone_id                = data.aws_lb.ingress.zone_id
+    evaluate_target_health = true
+  }
+  depends_on               = [ helm_release.ingress-nginx ]
+}
