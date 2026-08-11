@@ -1,11 +1,30 @@
-module "vpc" {
-  source = "./modules/vpc"
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
-  vpc_name     = "${var.vpc_name}-${var.environment}"
-  cidr_block   = var.vpc_cidr
-  subnet_cidrs = [for s in var.subnets : s.cidr_block]
-  availability_zones = [for s in var.subnets : s.availability_zone]
-  cluster_name     = "${var.cluster_name}-${var.environment}"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.5.1"
+  
+  name               = "${var.vpc_name}-${var.environment}"
+  cidr               = var.vpc_cidr
+  enable_nat_gateway = true
+  single_nat_gateway = true
+  create_database_subnet_route_table = false
+  
+  azs                = slice(data.aws_availability_zones.available.names, 0, 2)
+  private_subnets    = var.private_subnets
+  public_subnets     = var.public_subnets
+  database_subnets   = var.database_subnets
+
+  tags = { "Name" = "${var.vpc_name}-${var.environment}" }
+  public_subnet_tags = { "Name" = "${var.vpc_name}-${var.environment}-Public" }
+  private_subnet_tags = { 
+    "Name" = "${var.vpc_name}-${var.environment}-Private",
+    "kubernetes.io/role/internal-elb" = "1",
+    "kubernetes.io/cluster/${var.cluster_name}-${var.environment}" = "owned"
+  }
+  database_subnet_tags = { "Name" = "${var.vpc_name}-${var.environment}-Database" }
 }
 
 
@@ -20,7 +39,7 @@ module "eks" {
   desired_size   = var.desired_size
   max_size       = var.max_size
 
-  subnet_ids = module.vpc.subnet_ids
+  subnet_ids     = module.vpc.private_subnets
   depends_on = [module.vpc]
 }
 

@@ -24,7 +24,7 @@ module "rds" {
   db_port              = 5432
   vpc_id               = module.vpc.vpc_id
   security_groups      = [module.eks.cluster_security_group_id]
-  subnets              = module.vpc.subnet_ids
+  subnets              = module.vpc.database_subnets
   enable_http_endpoint = true
   kms_key_arn          = module.kms.key_arn
   storage_encrypted    = true

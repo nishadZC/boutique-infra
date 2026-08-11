@@ -13,13 +13,19 @@ variable "vpc_cidr" {
   type = string
 }
 
-variable "subnets" {
-  description = "List of subnets"
-  type = list(object({
-    name                      = string
-    cidr_block                = string
-    availability_zone         = string
-  }))
+variable "private_subnets" {
+  description = "List of private subnet CIDRs"
+  type        = list(string)
+}
+
+variable "public_subnets" {
+  description = "List of public subnet CIDRs"
+  type        = list(string)
+}
+
+variable "database_subnets" {
+  description = "List of database subnet CIDRs"
+  type        = list(string)
 }
 
 

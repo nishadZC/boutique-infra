@@ -2,24 +2,9 @@ region = "us-east-1"
 vpc_name = "boutique-vpc"
 vpc_cidr = "10.1.0.0/16"
 
- subnets = [
-  {
-    name = "subnet-1"
-    cidr_block = "10.1.1.0/24"
-    availability_zone = "us-east-1a"
-  },
-
-  {
-    name = "subnet-2",
-    cidr_block = "10.1.2.0/24",
-    availability_zone = "us-east-1b"
-  },
-  {
-    name = "subnet-3",
-    cidr_block = "10.1.3.0/24",
-    availability_zone = "us-east-1c"
-  }
- ]
+private_subnets  = ["10.1.1.0/24", "10.1.2.0/24"]
+public_subnets   = ["10.1.3.0/24", "10.1.4.0/24"]
+database_subnets = ["10.1.5.0/24", "10.1.6.0/24"]
 
 cluster_name = "boutique-eks"
 node_group_name = "eks-node-group"
