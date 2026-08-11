@@ -86,4 +86,3 @@ variable "id_rsa" {
   type        = string
   description = "Public SSH key for Bastion host"
 }
-
