@@ -46,6 +46,7 @@ resource "aws_acm_certificate_validation" "eks_domain_cert_validation" {
 }
 
 data "kubernetes_service" "ingress_gateway" {
+  provider = kubernetes.eks
   metadata {
     name      = "ingress-nginx-controller"
     namespace = helm_release.ingress-nginx.namespace

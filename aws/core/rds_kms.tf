@@ -28,6 +28,7 @@ module "rds" {
   enable_http_endpoint = true
   kms_key_arn          = module.kms.key_arn
   storage_encrypted    = true
+  retention_period     = 1
 
   scaling_configuration = [
     {
