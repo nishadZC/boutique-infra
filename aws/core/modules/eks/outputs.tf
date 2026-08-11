@@ -29,3 +29,7 @@ output "oidc_provider_arn" {
 output "oidc_issuer" {
   value = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
+
+output "cluster_security_group_id" {
+  value = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
+}

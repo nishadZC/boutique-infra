@@ -69,4 +69,14 @@ variable "repositories" {
 variable "environment" {
   type        = string
   description = "The environment name (e.g. dev, prod)"
+}
+
+variable "base_domain" {
+  type        = string
+  description = "The base domain name for Route 53"
+}
+
+variable "id_rsa" {
+  type        = string
+  description = "Public SSH key for Bastion host"
 }
