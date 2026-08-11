@@ -86,3 +86,13 @@ variable "id_rsa" {
   type        = string
   description = "Public SSH key for Bastion host"
 }
+
+variable "cd_project_repo" {
+  type        = string
+  description = "Argo CD project repo"
+}
+
+variable "github_token" {
+  type        = string
+  description = "GitHub token for Argo CD repo access"
+}

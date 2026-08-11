@@ -84,3 +84,22 @@ resource "helm_release" "monitoring" {
     kubernetes_namespace_v1.monitoring
   ]
 }
+
+resource "kubernetes_secret" "demo-repo" {
+  metadata {
+    name      = "demo-repo"
+    namespace = kubernetes_namespace_v1.argocd.metadata[0].name
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+  data = {
+    username = "git"
+    password = var.github_token
+    type     = "git"
+    url      = "https://github.com/${var.cd_project_repo}"
+  }
+  type = "Opaque"
+
+  depends_on = [helm_release.argocd]
+}
