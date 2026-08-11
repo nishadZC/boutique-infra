@@ -103,3 +103,30 @@ resource "kubernetes_secret" "demo-repo" {
 
   depends_on = [helm_release.argocd]
 }
+
+resource "kubernetes_namespace_v1" "boutique" {
+  metadata {
+    name = "boutique"
+  }
+}
+
+resource "helm_release" "argocd-apps" {
+  name       = "argocd-apps"
+  chart      = "argocd-apps"
+  namespace  = kubernetes_namespace_v1.argocd.metadata[0].name
+  version    = "1.6.1"
+  repository = "https://argoproj.github.io/argo-helm"
+  timeout    = 300
+
+  set {
+    name  = "applications[0].source.repoURL"
+    value = "https://github.com/${var.cd_project_repo}"
+    type  = "string"
+  }
+
+  values = [
+    "${file("${path.module}/argo-cd-apps-values.yaml")}"
+  ]
+
+  depends_on = [helm_release.argocd, kubernetes_secret.demo-repo]
+}
