@@ -46,6 +46,7 @@ module "eks" {
 module "ecr" {
   source = "./modules/ecr"
   repositories = var.repositories
+  environment  = var.environment
 }
 
 
