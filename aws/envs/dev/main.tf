@@ -28,7 +28,7 @@ module "core" {
   cluster_name = "boutique-eks"
   node_group_name = "eks-node-group"
 
-  instance_types = ["t3.medium"]
+  instance_types = ["c7i-flex.large"]
   capacity_type  = "SPOT"
 
   desired_size = 1

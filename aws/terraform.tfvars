@@ -9,7 +9,7 @@ database_subnets = ["10.1.5.0/24", "10.1.6.0/24"]
 cluster_name = "boutique-eks"
 node_group_name = "eks-node-group"
 
-instance_types = ["m7i-flex.large"]
+instance_types = ["c7i-flex.large"]
 capacity_type  = "ON_DEMAND"
 
 desired_size = 2

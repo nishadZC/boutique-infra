@@ -28,7 +28,7 @@ module "core" {
   cluster_name = "boutique-eks"
   node_group_name = "eks-node-group"
 
-  instance_types = ["m7i-flex.large"] # Larger instance for prod
+  instance_types = ["c7i-flex.large"] # Larger instance for prod
   capacity_type  = "ON_DEMAND"        # On demand for reliability
 
   desired_size = 2
