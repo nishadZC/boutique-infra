@@ -124,6 +124,12 @@ resource "helm_release" "argocd-apps" {
     type  = "string"
   }
 
+  set {
+    name  = "applications[0].source.targetRevision"
+    value = var.environment
+    type  = "string"
+  }
+
   values = [
     "${file("${path.module}/argo-cd-apps-values.yaml")}"
   ]

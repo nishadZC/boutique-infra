@@ -7,3 +7,8 @@ variable "github_token" {
   description = "github token for argo cd repo access"
   type        = string
 }
+
+variable "environment" {
+  description = "The environment name"
+  type        = string
+}

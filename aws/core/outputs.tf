@@ -15,5 +15,5 @@ output "kms_key_arn" {
 }
 
 output "rds_cluster_endpoint" {
-  value = module.rds.endpoint
+  value = aws_db_instance.rds.endpoint
 }

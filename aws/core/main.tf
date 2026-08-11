@@ -58,6 +58,7 @@ module "argocd" {
   }
   cd_project_repo = var.cd_project_repo
   github_token    = var.github_token
+  environment     = var.environment
   depends_on = [module.eks, helm_release.aws_load_balancer_controller]
 }
 

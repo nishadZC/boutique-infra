@@ -9,37 +9,33 @@ module "kms" {
   aliases                 = ["alias/boutique-${var.environment}"]
 }
 
-module "rds" {
-  source  = "cloudposse/rds-cluster/aws"
-  version = "1.5.0"
-
-  name                 = "boutique-db"
-  environment          = var.environment
-  engine               = "aurora-postgresql"
-  cluster_family       = "aurora-postgresql14"
-  cluster_size         = 1
-  admin_user           = random_password.rds_admin_username.result
-  admin_password       = random_password.rds_password.result
-  db_name              = "boutique"
-  db_port              = 5432
-  vpc_id               = module.vpc.vpc_id
-  security_groups      = [module.eks.cluster_security_group_id]
-  subnets              = module.vpc.database_subnets
-  enable_http_endpoint = true
-  kms_key_arn          = module.kms.key_arn
-  storage_encrypted    = true
-  retention_period     = 1
-
-  scaling_configuration = [
-    {
-      auto_pause               = true
-      max_capacity             = 16
-      min_capacity             = 2
-      seconds_until_auto_pause = 300
-      timeout_action           = "ForceApplyCapacityChange"
-    }
-  ]
+resource "aws_db_subnet_group" "rds" {
+  name       = "${var.environment}-rds-subnet-group"
+  subnet_ids = module.vpc.database_subnets
 }
+
+resource "aws_db_instance" "rds" {
+  identifier             = "boutique-db-${var.environment}"
+  allocated_storage      = 20
+  engine                 = "postgres"
+  engine_version         = "16"
+  instance_class         = "db.t3.micro"
+  db_name                = "boutique"
+  username               = random_password.rds_admin_username.result
+  password               = random_password.rds_password.result
+  parameter_group_name   = "default.postgres16"
+  skip_final_snapshot    = true
+  vpc_security_group_ids = [module.eks.cluster_security_group_id]
+  db_subnet_group_name   = aws_db_subnet_group.rds.name
+  port                   = 5432
+  storage_encrypted      = true
+  kms_key_id             = module.kms.key_arn
+
+  tags = {
+    Name = "${var.environment}-rds"
+  }
+}
+
 
 resource "random_password" "rds_password" {
   length           = 16
@@ -64,7 +60,7 @@ resource "aws_ssm_parameter" "save_rds_endpoint_to_ssm" {
   name        = "/${var.environment}/rds/endpoint"
   description = "RDS endpoint"
   type        = "SecureString"
-  value       = module.rds.endpoint
+  value       = aws_db_instance.rds.endpoint
 }
 
 resource "aws_ssm_parameter" "save_rds_password_to_ssm" {
